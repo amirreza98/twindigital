@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSnapshot } from 'valtio';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 import config from '../config/config';
 import state from '../store';
 import { download } from '../assets';
-import { downloadCanvasToImage, reader } from '../config/helpers';
+import DownloadButton , {reader}  from '../config/helpers';
 import { EditorTabs, FilterTabs, DecalTypes } from '../config/constants';
 import { fadeAnimation, slideAnimation } from '../config/motion';
 import { ColorPicker, CustomButton, FilePicker, Tab } from '../components';
 
 const Customizer = () => {
+
   const snap = useSnapshot(state);
 
   const [file, setFile] = useState('');
@@ -23,6 +26,7 @@ const Customizer = () => {
     logoShirt: true,
     stylishShirt: false,
   })
+
 
   // show tab content depending on the activeTab
   const generateTabContent = () => {
@@ -39,7 +43,6 @@ const Customizer = () => {
         return null;
     }
   }
-
 
   const handleDecals = (type, result) => {
     const decalType = DecalTypes[type];
@@ -98,7 +101,7 @@ const Customizer = () => {
                   <Tab 
                     key={tab.name}
                     tab={tab}
-                    handleClick={() => setActiveEditorTab(tab.name)}
+                    handleClick={() => setActiveEditorTab(prevTab => prevTab === tab.name ? "" : tab.name)}
                   />
                 ))}
 
@@ -132,6 +135,10 @@ const Customizer = () => {
                 handleClick={() => handleActiveFilterTab(tab.name)}
               />
             ))}
+            <DownloadButton 
+              logoDecal={snap.logoDecal}
+              fullDecal={snap.fullDecal}
+            />
           </motion.div>
         </>
       )}
